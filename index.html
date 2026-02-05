@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Game App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🤖 AI Game App</h1>
+
+<div id="menu">
+    <button onclick="showSection('tic')">Tic-Tac-Toe</button>
+    <button onclick="showSection('chess')">Chess</button>
+    <button onclick="showSection('quiz')">Quiz</button>
+    <button onclick="showSection('number')">Find My Number</button>
+</div>
+
+<!-- Tic Tac Toe -->
+<div id="tic" class="game hidden">
+    <h2>Tic-Tac-Toe</h2>
+    <div id="ttt-board"></div>
+    <button onclick="resetTicTacToe()">Reset</button>
+</div>
+
+<!-- Chess -->
+<div id="chess" class="game hidden">
+    <h2>Chess (Simple)</h2>
+    <div id="chess-board"></div>
+    <button onclick="resetChess()">Reset</button>
+</div>
+
+<!-- Quiz -->
+<div id="quiz" class="game hidden">
+    <h2>Quiz</h2>
+    <p id="question"></p>
+    <input id="answer" placeholder="Your answer">
+    <button onclick="checkQuiz()">Submit</button>
+    <p id="quizResult"></p>
+</div>
+
+<!-- Find My Number -->
+<div id="number" class="game hidden">
+    <h2>Find My Number</h2>
+    <input type="number" id="guess">
+    <button onclick="checkGuess()">Guess</button>
+    <p id="numResult"></p>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
