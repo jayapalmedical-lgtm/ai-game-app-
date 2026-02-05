@@ -1,0 +1,56 @@
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #eef;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+.hidden {
+    display: none;
+}
+
+.game {
+    margin-top: 20px;
+}
+
+/* Tic Tac Toe */
+#ttt-board {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    gap: 5px;
+    justify-content: center;
+}
+
+.cell {
+    width: 80px;
+    height: 80px;
+    border: 2px solid black;
+    font-size: 40px;
+    background: white;
+    cursor: pointer;
+}
+
+/* Chess */
+#chess-board {
+    display: grid;
+    grid-template-columns: repeat(8, 45px);
+    width: 360px;
+    margin: auto;
+}
+
+.chess {
+    width: 45px;
+    height: 45px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.white { background: #f0d9b5; }
+.black { background: #b58863; }
