@@ -144,9 +144,9 @@ function checkGuess(){
     document.getElementById("numResult").textContent =
         g==secret?"Correct!":g<secret?"Too Low":"Too High";
 }
+
 // ================= CHESS GAME (SMART BUT BEATABLE AI) =================
 
-// Initial board
 const chessStart = [
  ["r","n","b","q","k","b","n","r"],
  ["p","p","p","p","p","p","p","p"],
@@ -161,21 +161,19 @@ const chessStart = [
 let board = JSON.parse(JSON.stringify(chessStart));
 let selected = null;
 
-// Reset game
 function resetChess() {
     board = JSON.parse(JSON.stringify(chessStart));
     selected = null;
     drawChess();
 }
 
-// Draw board
 function drawChess() {
     const el = document.getElementById("chess-board");
     el.innerHTML = "";
 
     for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
-            let cell = document.createElement("div");
+            const cell = document.createElement("div");
             cell.className = "chess-cell " + ((r + c) % 2 ? "chess-black" : "chess-white");
             cell.textContent = board[r][c];
             cell.onclick = () => chessClick(r, c);
@@ -184,79 +182,96 @@ function drawChess() {
     }
 }
 
-// Player move
 function chessClick(r, c) {
     if (selected) {
-        let [sr, sc] = selected;
-        let piece = board[sr][sc];
+        const [sr, sc] = selected;
+        const piece = board[sr][sc];
 
-        if (piece === piece.toUpperCase()) {
+        if (isValidMove(piece, sr, sc, r, c)) {
             board[r][c] = piece;
             board[sr][sc] = "";
             selected = null;
             drawChess();
-            setTimeout(chessAI, 300);
+            setTimeout(chessAI, 400);
+        } else {
+            selected = null;
         }
     } else if (board[r][c] && board[r][c] === board[r][c].toUpperCase()) {
         selected = [r, c];
     }
 }
 
-// SMART BUT BEATABLE AI
+// -------- MOVE RULES --------
+function isValidMove(p, sr, sc, r, c) {
+    if (board[r][c] && board[r][c] === board[r][c].toUpperCase()) return false;
+
+    const dr = r - sr;
+    const dc = c - sc;
+
+    switch (p) {
+        case "P": return dr === -1 && dc === 0 && !board[r][c];
+        case "R": return (dr === 0 || dc === 0);
+        case "B": return Math.abs(dr) === Math.abs(dc);
+        case "Q": return dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc);
+        case "N": return (Math.abs(dr) === 2 && Math.abs(dc) === 1) ||
+                         (Math.abs(dr) === 1 && Math.abs(dc) === 2);
+        case "K": return Math.abs(dr) <= 1 && Math.abs(dc) <= 1;
+    }
+    return false;
+}
+
+// -------- AI (SMART BUT BEATABLE) --------
 function chessAI() {
     let moves = [];
 
     for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
-            let piece = board[r][c];
+            const piece = board[r][c];
             if (piece && piece === piece.toLowerCase()) {
 
-                let directions = [[1,0],[-1,0],[0,1],[0,-1]];
+                for (let nr = 0; nr < 8; nr++) {
+                    for (let nc = 0; nc < 8; nc++) {
+                        if (isValidAIMove(piece, r, c, nr, nc)) {
+                            let score = 0;
+                            if (board[nr][nc]) score += 5;
+                            if ([3,4].includes(nr) && [3,4].includes(nc)) score += 2;
 
-                directions.forEach(d => {
-                    let nr = r + d[0];
-                    let nc = c + d[1];
-
-                    if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
-                        let target = board[nr][nc];
-                        let score = 0;
-
-                        // capture priority
-                        if (target && target === target.toUpperCase()) score += 5;
-
-                        // pawn forward
-                        if (piece === "p" && nr > r) score += 2;
-
-                        // center control
-                        if ([3,4].includes(nr) && [3,4].includes(nc)) score += 1;
-
-                        if (!target || target === target.toUpperCase()) {
-                            moves.push({
-                                from: [r, c],
-                                to: [nr, nc],
-                                score: score
-                            });
+                            moves.push({ from:[r,c], to:[nr,nc], score });
                         }
                     }
-                });
+                }
             }
         }
     }
 
-    if (moves.length === 0) return;
+    if (!moves.length) return;
 
-    // sort best → worst
-    moves.sort((a, b) => b.score - a.score);
-
-    // choose from top few (beatable)
-    let bestMoves = moves.slice(0, Math.min(3, moves.length));
-    let move = bestMoves[Math.floor(Math.random() * bestMoves.length)];
+    moves.sort((a,b)=>b.score-a.score);
+    const best = moves.slice(0, 4);
+    const move = best[Math.floor(Math.random()*best.length)];
 
     board[move.to[0]][move.to[1]] = board[move.from[0]][move.from[1]];
     board[move.from[0]][move.from[1]] = "";
-
     drawChess();
 }
 
-// Start game
+function isValidAIMove(p, sr, sc, r, c) {
+    if (board[r][c] && board[r][c] === board[r][c].toLowerCase()) return false;
+
+    const dr = r - sr;
+    const dc = c - sc;
+
+    switch (p) {
+        case "p": return dr === 1 && dc === 0;
+        case "r": return dr === 0 || dc === 0;
+        case "b": return Math.abs(dr) === Math.abs(dc);
+        case "q": return dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc);
+        case "n": return (Math.abs(dr) === 2 && Math.abs(dc) === 1) ||
+                         (Math.abs(dr) === 1 && Math.abs(dc) === 2);
+        case "k": return Math.abs(dr) <= 1 && Math.abs(dc) <= 1;
+    }
+    return false;
+}
+
+resetChess();
 resetChess();
